@@ -31,7 +31,7 @@ userdom_spec_domtrans_all_users(vnc_session_t)
 userdom_signal_all_users(vnc_session_t)
 
 allow vnc_session_t self:capability { kill chown dac_override dac_read_search fowner setgid setuid sys_resource };
-allow vnc_session_t self:process { getcap setsched setexec setrlimit };
+allow vnc_session_t self:process { getcap setsched setexec setrlimit transition};
 allow vnc_session_t self:fifo_file rw_fifo_file_perms;
 
 miscfiles_read_localization(vnc_session_t)
