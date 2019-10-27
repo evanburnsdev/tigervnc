@@ -17,32 +17,42 @@
 #  USA.
 #
 
-policy_module(vncsession, 1.0.0);
+policy_module(vncsession, 1.0.0)
+
+type vnc_session_t;
 
 type vnc_session_exec_t;
 corecmd_executable_file(vnc_session_exec_t)
-type vnc_session_t;
 init_daemon_domain(vnc_session_t, vnc_session_exec_t)
 auth_login_pgm_domain(vnc_session_t)
-
 auth_write_login_records(vnc_session_t)
-
-userdom_spec_domtrans_all_users(vnc_session_t)
-userdom_signal_all_users(vnc_session_t)
-
-allow vnc_session_t self:capability { kill chown dac_override dac_read_search fowner setgid setuid sys_resource };
-allow vnc_session_t self:process { getcap setsched setexec setrlimit transition};
-allow vnc_session_t self:fifo_file rw_fifo_file_perms;
-
 miscfiles_read_localization(vnc_session_t)
-
 kernel_read_kernel_sysctls(vnc_session_t)
-
 logging_append_all_logs(vnc_session_t)
 
 mcs_process_set_categories(vnc_session_t)
 mcs_killall(vnc_session_t)
 
+userdom_spec_domtrans_all_users(vnc_session_t)
+userdom_signal_all_users(vnc_session_t)
+userdom_create_user_home_dirs(vnc_session_t)
+userdom_manage_user_home_content_files(vnc_session_t)
+
+allow vnc_session_t self:capability { kill chown dac_override 
+				      dac_read_search fowner setgid
+				      setuid sys_resource };
+allow vnc_session_t self:process { getcap setsched setexec setrlimit };
+allow vnc_session_t self:fifo_file rw_fifo_file_perms;
 allow vnc_session_t file_type:dir search_dir_perms;
-userdom_create_user_home_dirs(vnc_session_t);
-userdom_manage_user_home_content_files(vnc_session_t);
+
+allow vnc_session_t vnc_session_exec_t:file execute_no_trans;
+
+require {
+	type var_run_t;
+	type xserver_t;
+	class file { create entrypoint execute_no_trans write open getattr unlink };
+	class unix_stream_socket connectto;
+}
+
+allow vnc_session_t var_run_t:file { create write open getattr unlink };
+allow vnc_session_t xserver_t:unix_stream_socket connectto;

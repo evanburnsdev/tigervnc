@@ -5,6 +5,7 @@
 #
 #     sudo semodule -i /usr/share/selinux/packages/vncsession.pp
 #     sudo restorecon /usr/sbin/vncsession
+#     sudo restorecon /usr/libexec/vncsession-start
 #
 
 PREFIX=/usr
